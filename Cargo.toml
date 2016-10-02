@@ -1,0 +1,6 @@
+[package]
+name = "httpstat"
+version = "0.1.0"
+authors = ["woxtu <woxtup@gmail.com>"]
+
+[dependencies]
