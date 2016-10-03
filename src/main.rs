@@ -27,8 +27,26 @@ fn main() {
 
     curl_sys::curl_easy_perform(handle);
 
-    println!("{}", header);
-    println!("{}", body);
+    let mut time_namelookup = 0f64;
+    curl_sys::curl_easy_getinfo(handle, curl_sys::CURLINFO_NAMELOOKUP_TIME, &mut time_namelookup);
+
+    let mut time_connect = 0f64;
+    curl_sys::curl_easy_getinfo(handle, curl_sys::CURLINFO_CONNECT_TIME, &mut time_connect);
+
+    let mut time_pretransfer = 0f64;
+    curl_sys::curl_easy_getinfo(handle, curl_sys::CURLINFO_PRETRANSFER_TIME, &mut time_pretransfer);
+
+    let mut time_starttransfer = 0f64;
+    curl_sys::curl_easy_getinfo(handle, curl_sys::CURLINFO_STARTTRANSFER_TIME, &mut time_starttransfer);
+
+    let mut time_total = 0f64;
+    curl_sys::curl_easy_getinfo(handle, curl_sys::CURLINFO_TOTAL_TIME, &mut time_total);
+
+    println!("{:7.0}", time_namelookup * 1000.0);
+    println!("{:7.0}", time_connect * 1000.0);
+    println!("{:7.0}", time_pretransfer * 1000.0);
+    println!("{:7.0}", time_starttransfer * 1000.0);
+    println!("{:7.0}", time_total * 1000.0);
 
     curl_sys::curl_easy_cleanup(handle);
   }
