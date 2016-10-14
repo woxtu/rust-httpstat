@@ -1,9 +1,16 @@
 extern crate curl_sys;
 extern crate libc;
+extern crate regex;
 
 use std::env;
+use regex::Regex;
 
 mod curl;
+
+const RESET: &'static str = "\u{1b}[0m";
+const BOLD: &'static str = "\u{1b}[1m";
+const GREEN: &'static str = "\u{1b}[32m";
+const CYAN: &'static str = "\u{1b}[36m";
 
 macro_rules! unwrap {
   ($expr:expr) => (match $expr {
@@ -13,17 +20,17 @@ macro_rules! unwrap {
 }
 
 fn format_a(x: f64) -> String {
-  format!("{:^7}", format!("{:.0}ms", x * 1000.0))
+  format!("{}{:^7}{}", CYAN, format!("{:.0}ms", x * 1000.0), RESET)
 }
 
 fn format_b(x: f64) -> String {
-  format!("{:<7}", format!("{:.0}ms", x * 1000.0))
+  format!("{}{:<7}{}", CYAN, format!("{:.0}ms", x * 1000.0), RESET)
 }
 
 fn https_format(time: &curl::Time) -> String {
   format!(
 "
-  DNS Lookup   TCP Connection   SSL Handshake   Server Processing   Content Transfer
+  {}DNS Lookup   TCP Connection   SSL Handshake   Server Processing   Content Transfer{}
 [   {a0000}  |     {a0001}    |    {a0002}    |      {a0003}      |      {a0004}     ]
              |                |               |                   |                  |
     namelookup:{b0000}        |               |                   |                  |
@@ -32,6 +39,7 @@ fn https_format(time: &curl::Time) -> String {
                                                       starttransfer:{b0003}          |
                                                                                  total:{b0004}
 ",
+    BOLD, RESET,
     a0000 = format_a(time.namelookup),
     a0001 = format_a(time.connect - time.namelookup),
     a0002 = format_a(time.pretransfer - time.connect),
@@ -47,7 +55,7 @@ fn https_format(time: &curl::Time) -> String {
 fn http_format(time: &curl::Time) -> String {
   format!(
 "
-  DNS Lookup   TCP Connection   Server Processing   Content Transfer
+  {}DNS Lookup   TCP Connection   Server Processing   Content Transfer{}
 [   {a0000}  |     {a0001}    |      {a0003}      |      {a0004}     ]
              |                |                   |                  |
     namelookup:{b0000}        |                   |                  |
@@ -55,6 +63,7 @@ fn http_format(time: &curl::Time) -> String {
                                       starttransfer:{b0003}          |
                                                                  total:{b0004}
 ",
+    BOLD, RESET,
     a0000 = format_a(time.namelookup),
     a0001 = format_a(time.connect - time.namelookup),
     a0003 = format_a(time.starttransfer - time.pretransfer),
@@ -73,7 +82,19 @@ fn main() {
     println!("");
 
     let response = unwrap!(client.perform());
-    println!("{}", response.header);
+
+    for (index, line) in response.header.lines().enumerate() {
+      match index {
+        0 => {
+          let re = Regex::new("(.+?)/(.*)").unwrap();
+          println!("{}", re.replace(line, format!("{}$1{}/{}$2{}", GREEN, RESET, CYAN, RESET).as_str()));
+        },
+        _ => {
+          let re = Regex::new("(.+?):(.*)").unwrap();
+          println!("{}", re.replace(line, format!("$1:{}$2{}", CYAN, RESET).as_str()));
+        },
+      }
+    }
 
     let time = unwrap!(client.get_time());
     println!("{}", (if url.starts_with("https") { https_format } else { http_format })(&time));

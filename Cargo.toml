@@ -1,8 +1,9 @@
 [package]
+authors = ["woxtu <woxtup@gmail.com>"]
 name = "httpstat"
 version = "0.1.0"
-authors = ["woxtu <woxtup@gmail.com>"]
 
 [dependencies]
-curl-sys = "0.2.*"
-libc = "0.2.*"
+curl-sys = "0.2.3"
+libc = "0.2.16"
+regex = "0.1.77"
