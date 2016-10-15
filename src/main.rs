@@ -1,8 +1,12 @@
 extern crate curl_sys;
 extern crate libc;
+extern crate rand;
 extern crate regex;
 
 use std::env;
+use std::fs::File;
+use std::io::Write;
+use rand::Rng;
 use regex::Regex;
 
 mod curl;
@@ -95,6 +99,13 @@ fn main() {
         },
       }
     }
+
+    let mut tempfile_path = env::temp_dir();
+    tempfile_path.set_file_name(rand::thread_rng().gen_ascii_chars().take(20).collect::<String>());
+    let mut tempfile = unwrap!(File::create(&tempfile_path));
+    unwrap!(tempfile.write_all(response.body.as_bytes()));
+    println!("");
+    println!("{}Body{} stored in: {}", GREEN, RESET, tempfile_path.to_string_lossy());
 
     let time = unwrap!(client.get_time());
     println!("{}", (if url.starts_with("https") { https_format } else { http_format })(&time));
