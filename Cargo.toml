@@ -1,5 +1,6 @@
 [package]
 authors = ["woxtu <woxtup@gmail.com>"]
+license = "MIT"
 name = "httpstat"
 version = "0.1.0"
 
