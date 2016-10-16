@@ -91,8 +91,8 @@ impl Easy {
     self.get_result(unsafe { curl_easy_setopt(self.handle, option, value) })
   }
 
-  fn get_info<T: Default>(&self, info: CURLINFO) -> Result<T, Error> {
-    let mut result = T::default();
+  fn get_info<T>(&self, info: CURLINFO) -> Result<T, Error> {
+    let mut result = unsafe { mem::zeroed() };
     self.get_result(unsafe { curl_easy_getinfo(self.handle, info, &mut result) })
       .map(|_| result)
   }
