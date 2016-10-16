@@ -1,3 +1,4 @@
+extern crate clap;
 extern crate curl_sys;
 extern crate libc;
 extern crate rand;
@@ -6,15 +7,11 @@ extern crate regex;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use clap::App;
 use rand::Rng;
 use regex::Regex;
 
 mod curl;
-
-const RESET: &'static str = "\u{1b}[0m";
-const BOLD: &'static str = "\u{1b}[1m";
-const GREEN: &'static str = "\u{1b}[32m";
-const CYAN: &'static str = "\u{1b}[36m";
 
 macro_rules! unwrap {
   ($expr:expr) => (match $expr {
@@ -22,6 +19,11 @@ macro_rules! unwrap {
     Err(error) => panic!(error.to_string()),
   })
 }
+
+const RESET: &'static str = "\u{1b}[0m";
+const BOLD: &'static str = "\u{1b}[1m";
+const GREEN: &'static str = "\u{1b}[32m";
+const CYAN: &'static str = "\u{1b}[36m";
 
 fn format_a(x: f64) -> String {
   format!("{}{:^7}{}", CYAN, format!("{:.0}ms", x * 1000.0), RESET)
@@ -79,35 +81,40 @@ fn http_format(time: &curl::Time) -> String {
 }
 
 fn main() {
-  if let Some(url) = env::args().nth(1) {
-    let client = unwrap!(curl::Easy::new());
-    unwrap!(client.set_url("http://example.com"));
+  let args = App::new("httpstat")
+    .version(env!("CARGO_PKG_VERSION"))
+    .about("curl statistics made simple")
+    .arg_from_usage("<url> 'URL to work with'")
+    .get_matches();
 
-    println!("");
+  let url = args.value_of("url").unwrap();
 
-    let response = unwrap!(client.perform());
+  let client = unwrap!(curl::Easy::new());
+  unwrap!(client.set_url(url));
 
-    for (index, line) in response.header.lines().enumerate() {
-      match index {
-        0 => {
-          let re = Regex::new("(.+?)/(.*)").unwrap();
-          println!("{}", re.replace(line, format!("{}$1{}/{}$2{}", GREEN, RESET, CYAN, RESET).as_str()));
-        },
+  let response = unwrap!(client.perform());
+
+  for (index, line) in response.header.lines().enumerate() {
+    match index {
+      0 => {
+        let re = Regex::new("(.+?)/(.*)").unwrap();
+        println!("");
+        println!("{}", re.replace(line, format!("{}$1{}/{}$2{}", GREEN, RESET, CYAN, RESET).as_str()));
+      },
         _ => {
           let re = Regex::new("(.+?):(.*)").unwrap();
           println!("{}", re.replace(line, format!("$1:{}$2{}", CYAN, RESET).as_str()));
         },
-      }
     }
-
-    let mut tempfile_path = env::temp_dir();
-    tempfile_path.set_file_name(rand::thread_rng().gen_ascii_chars().take(20).collect::<String>());
-    let mut tempfile = unwrap!(File::create(&tempfile_path));
-    unwrap!(tempfile.write_all(response.body.as_bytes()));
-    println!("");
-    println!("{}Body{} stored in: {}", GREEN, RESET, tempfile_path.to_string_lossy());
-
-    let time = unwrap!(client.get_time());
-    println!("{}", (if url.starts_with("https") { https_format } else { http_format })(&time));
   }
+
+  let mut tempfile_path = env::temp_dir();
+  tempfile_path.set_file_name(rand::thread_rng().gen_ascii_chars().take(20).collect::<String>());
+  let mut tempfile = unwrap!(File::create(&tempfile_path));
+  unwrap!(tempfile.write_all(response.body.as_bytes()));
+  println!("");
+  println!("{}Body{} stored in: {}", GREEN, RESET, tempfile_path.to_string_lossy());
+
+  let time = unwrap!(client.get_time());
+  println!("{}", (if url.starts_with("https") { https_format } else { http_format })(&time));
 }

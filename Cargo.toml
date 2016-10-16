@@ -5,6 +5,7 @@ name = "httpstat"
 version = "0.1.0"
 
 [dependencies]
+clap = "2.14.0"
 curl-sys = "0.2.3"
 libc = "0.2.16"
 rand = "0.3.14"
