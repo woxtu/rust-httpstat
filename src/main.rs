@@ -1,6 +1,5 @@
 extern crate clap;
-extern crate curl_sys;
-extern crate libc;
+extern crate curl;
 extern crate rand;
 extern crate regex;
 
@@ -10,8 +9,6 @@ use std::io::Write;
 use clap::App;
 use rand::Rng;
 use regex::Regex;
-
-mod curl;
 
 macro_rules! unwrap {
   ($expr:expr) => (match $expr {

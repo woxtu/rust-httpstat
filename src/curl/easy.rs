@@ -5,6 +5,8 @@ use std::rc::{Rc, Weak};
 use curl_sys::*;
 use libc::*;
 
+use super::{Response, Time};
+
 type Error = Box<error::Error>;
 
 pub struct Easy {
@@ -12,20 +14,6 @@ pub struct Easy {
   header_buffer: Rc<RefCell<String>>,
   body_buffer: Rc<RefCell<String>>,
   error_buffer: Vec<u8>,
-}
-
-pub struct Response {
-  pub header: String,
-  pub body: String,
-}
-
-#[derive(Debug)]
-pub struct Time {
-  pub namelookup: f64,
-  pub connect: f64,
-  pub pretransfer: f64,
-  pub starttransfer: f64,
-  pub total: f64,
 }
 
 impl Easy {

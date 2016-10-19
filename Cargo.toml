@@ -4,6 +4,14 @@ license = "MIT"
 name = "httpstat"
 version = "0.1.0"
 
+[lib]
+name = "curl"
+path = "src/curl/lib.rs"
+
+[[bin]]
+name = "httpstat"
+path = "src/main.rs"
+
 [dependencies]
 clap = "2.14.0"
 curl-sys = "0.2.3"
