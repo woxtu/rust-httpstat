@@ -5,8 +5,8 @@ name = "httpstat"
 version = "0.1.0"
 
 [lib]
-name = "curl"
-path = "src/curl/lib.rs"
+name = "httpstat"
+path = "src/lib.rs"
 
 [[bin]]
 name = "httpstat"

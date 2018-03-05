@@ -1,12 +1,10 @@
 extern crate clap;
-extern crate curl;
+extern crate httpstat;
 extern crate rand;
 extern crate regex;
 
 use std::io::prelude::*;
 use clap::App;
-
-mod httpstat;
 
 fn main() {
   let args = App::new("httpstat")
@@ -17,7 +15,7 @@ fn main() {
     )
     .get_matches();
 
-  match httpstat::app::run(&args) {
+  match httpstat::httpstat::app::run(&args) {
     Ok(()) => (),
     Err(error) => {
       let _ = write!(std::io::stderr(), "{}", error.to_string());

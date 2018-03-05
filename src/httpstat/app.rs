@@ -3,7 +3,6 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 use clap::ArgMatches;
-use curl;
 use rand;
 use rand::Rng;
 
@@ -12,7 +11,7 @@ use super::{Body, Header, Time};
 pub fn run(args: &ArgMatches) -> Result<(), Box<Error>> {
   let url = args.value_of("url").unwrap();
 
-  let client = try!(curl::easy::Easy::new());
+  let client = try!(::httpstat::curl::easy::Easy::new());
   try!(client.set_url(url));
 
   let response = try!(client.perform());
