@@ -11,8 +11,24 @@ $ cargo install --git https://github.com/woxtu/rust-httpstat
 ```
 
 ## Usage
+as command-line tool:
+```
+$ httpstat https://www.rust-lang.org/
+```
 
-Work in progress.
+as package:
+```
+extern crate httpstat;
+
+fn main() {
+    let url = "https://www.rust-lang.org/";
+    match httpstat::request(url) {
+        Ok((_resp, time)) => println!("{:?}", time),
+        Err(e) => println!("fail httpstat request: {}", e),
+    }
+}
+```
+
 
 ## License
 

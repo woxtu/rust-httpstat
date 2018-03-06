@@ -8,6 +8,7 @@ pub struct Response {
   pub body: String,
 }
 
+#[derive(Debug)]
 pub struct Time {
   pub namelookup: f64,
   pub connect: f64,
@@ -16,4 +17,4 @@ pub struct Time {
   pub total: f64,
 }
 
-pub use easy::Easy;
+pub use self::easy::Easy;
