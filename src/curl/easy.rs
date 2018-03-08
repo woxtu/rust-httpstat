@@ -49,6 +49,10 @@ impl Easy {
     self.set_option(CURLOPT_URL, url.as_ptr())
   }
 
+  pub fn set_http2(&self) -> Result<(), Error> {
+    self.set_option(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0)
+  }
+
   pub fn perform(&self) -> Result<Response, Error> {
     self.get_result(unsafe { curl_easy_perform(self.handle) })
       .map(|_| Response {

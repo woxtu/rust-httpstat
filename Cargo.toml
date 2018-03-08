@@ -14,7 +14,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "2.14.0"
-curl-sys = "0.2.3"
+curl-sys = "0.4.1"
 libc = "0.2.16"
 rand = "0.3.14"
 regex = "0.1.77"
