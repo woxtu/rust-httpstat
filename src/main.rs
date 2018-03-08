@@ -11,7 +11,8 @@ fn main() {
     .version(env!("CARGO_PKG_VERSION"))
     .about("curl statistics made simple")
     .args_from_usage(
-      "<url> 'URL to work with'"
+      "<url>  'URL to work with'
+      --http2 'use HTTP version 2'"
     )
     .get_matches();
 

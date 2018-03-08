@@ -10,9 +10,13 @@ use super::{Body, Header, Time};
 
 pub fn run(args: &ArgMatches) -> Result<(), Box<Error>> {
   let url = args.value_of("url").unwrap();
+  let is_http2 = args.is_present("http2");
 
   let client = try!(::httpstat::curl::easy::Easy::new());
   try!(client.set_url(url));
+  if is_http2 {
+      try!(client.set_http2());
+  }
 
   let response = try!(client.perform());
 
