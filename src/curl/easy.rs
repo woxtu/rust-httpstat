@@ -16,6 +16,14 @@ pub struct Easy {
   error_buffer: Vec<u8>,
 }
 
+pub enum HttpVersion {
+  V10 = CURL_HTTP_VERSION_1_0 as isize,
+  V11 = CURL_HTTP_VERSION_1_1 as isize,
+  V2 = CURL_HTTP_VERSION_2_0 as isize,
+  V2TLS = CURL_HTTP_VERSION_2TLS as isize,
+  V2PriorKnowledge = CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE as isize,
+}
+
 impl Easy {
   pub fn new() -> Result<Easy, Error> {
     unsafe {
@@ -49,8 +57,8 @@ impl Easy {
     self.set_option(CURLOPT_URL, url.as_ptr())
   }
 
-  pub fn set_http2(&self) -> Result<(), Error> {
-    self.set_option(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0)
+  pub fn http_version(&self, version: HttpVersion) -> Result<(), Error> {
+    self.set_option(CURLOPT_HTTP_VERSION, version)
   }
 
   pub fn perform(&self) -> Result<Response, Error> {

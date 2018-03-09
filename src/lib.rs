@@ -7,6 +7,8 @@ extern crate rand;
 pub mod httpstat;
 pub mod curl;
 
+pub use curl::easy::HttpVersion;
+
 pub fn request(url: &str) -> Result<(curl::Response, curl::Time), String> {
     let client = curl::easy::Easy::new();
     match client {
