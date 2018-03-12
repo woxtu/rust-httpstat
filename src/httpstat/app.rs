@@ -7,12 +7,17 @@ use rand;
 use rand::Rng;
 
 use super::{Body, Header, Time};
+use ::curl::easy::HttpVersion;
 
 pub fn run(args: &ArgMatches) -> Result<(), Box<Error>> {
   let url = args.value_of("url").unwrap();
+  let is_http2 = args.is_present("http2");
 
   let client = try!(::httpstat::curl::easy::Easy::new());
   try!(client.set_url(url));
+  if is_http2 {
+    try!(client.http_version(HttpVersion::V2));
+  }
 
   let response = try!(client.perform());
 
